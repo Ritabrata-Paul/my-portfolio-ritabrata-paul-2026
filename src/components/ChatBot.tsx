@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { IoChatbubbleEllipses, IoClose, IoSend } from "react-icons/io5";
 import "./styles/ChatBot.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+const API_URL = import.meta.env.VITE_API_URL || "https://ritabrata-portfolio-backend.onrender.com";
 
 interface Message {
   role: "user" | "assistant";

@@ -80,7 +80,7 @@ const SocialIcons = () => {
       <div className="resume-downloads">
         <a
           className="resume-button"
-          href="/api/resume/pdf"
+          href="https://ritabrata-portfolio-backend.onrender.com/api/resume/pdf"
           download="Ritabrata Paul.pdf"
           data-cursor="disable"
         >
@@ -91,7 +91,7 @@ const SocialIcons = () => {
         </a>
         <a
           className="resume-button resume-word-btn"
-          href="/api/resume/docx"
+          href="https://ritabrata-portfolio-backend.onrender.com/api/resume/docx"
           download="Ritabrata Paul.docx"
           data-cursor="disable"
           title="Download Word format"
