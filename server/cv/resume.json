@@ -1,0 +1,151 @@
+{
+  "basics": {
+    "name": "Ritabrata Paul",
+    "label": "Full Stack Web Developer & DevOps Engineer",
+    "email": "ritabrata720@gmail.com",
+    "location": {
+      "city": "Bhatpara, North 24 Parganas",
+      "region": "West Bengal",
+      "country": "India"
+    },
+    "profiles": [
+      { "network": "LinkedIn", "url": "https://www.linkedin.com/in/ritabrata-paul-23a75919a" },
+      { "network": "GitHub", "url": "https://github.com/Ritabrata-Paul" },
+      { "network": "GeeksforGeeks", "url": "https://auth.geeksforgeeks.org/user/ritabrata720" },
+      { "network": "YouTube", "url": "https://www.youtube.com/@techfool1169" }
+    ],
+    "summary": "Full Stack Web Developer and DevOps Engineer with hands-on experience across the MERN stack, Python backends (Django, Flask, FastAPI), and cloud/DevOps tooling (AWS, Azure, GCP, Docker, Kubernetes, Jenkins, Terraform, CI/CD). Builds production web applications end to end and automates deployment pipelines. Additional focus on cybersecurity and secure coding."
+  },
+  "work": [
+    {
+      "name": "Royal Research",
+      "position": "Technical Researcher",
+      "startDate": "2024-03",
+      "endDate": "",
+      "summary": "In-depth technical research in back-end web development.",
+      "highlights": [
+        "Conducting in-depth technical research in Back-End Web Development (MERN Stack, Django REST Framework, Flask, ASP.NET Core, ASP.NET Web API, CSS).",
+        "Utilizing expertise in Kali Linux and FastAPI to develop and implement innovative solutions.",
+        "Collaborating with cross-functional teams to integrate cutting-edge technologies, frameworks and DevOps technologies."
+      ]
+    },
+    {
+      "name": "Indium Software (India) Private Limited",
+      "position": "DevOps Engineer",
+      "startDate": "2023-08",
+      "endDate": "2024-01",
+      "summary": "Automated deployment pipelines and infrastructure.",
+      "highlights": [
+        "Efficiently automated deployment pipelines and infrastructure configurations.",
+        "Implemented robust monitoring and logging systems.",
+        "Collaborated with development and operations teams to streamline workflows and foster CI/CD practices."
+      ]
+    }
+  ],
+  "internships": [
+    {
+      "name": "MockPI",
+      "position": "Full Stack Developer Intern",
+      "startDate": "2023-03",
+      "endDate": "2023-06",
+      "highlights": [
+        "Implemented frontend and backend development using OpenAI technology.",
+        "Integrated databases for efficient data management and retrieval.",
+        "Enhanced website UI/UX for a dynamic, user-friendly experience."
+      ]
+    },
+    {
+      "name": "Suvidha Foundation",
+      "position": "Web Developer Intern",
+      "startDate": "2022-12",
+      "endDate": "2023-01",
+      "highlights": [
+        "Enhanced and optimized company website with innovative designs.",
+        "Ensured cross-platform functionality and responsiveness."
+      ]
+    },
+    {
+      "name": "Solar Secure Solution",
+      "position": "Full Stack Web Developer Intern",
+      "startDate": "2022-09",
+      "endDate": "2022-12",
+      "highlights": [
+        "Developed and maintained front-end and back-end systems for a food website.",
+        "Ensured seamless user experience through UI/UX enhancements."
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "University of Engineering & Management (UEM), Jaipur",
+      "studyType": "B.Tech",
+      "area": "Computer Science & Engineering",
+      "startDate": "2019-06",
+      "endDate": "2023-04",
+      "score": "GPA 7.67"
+    }
+  ],
+  "projects": [
+    {
+      "name": "Pencraft (Author-Portal)",
+      "startDate": "2022-03",
+      "endDate": "2022-04",
+      "description": "E-commerce site with backend data management.",
+      "highlights": [
+        "Built an e-commerce site using React, Commerce.js, Material UI, Node.js, MySQL.",
+        "Integrated backend with MySQL and Node.js for data management."
+      ],
+      "keywords": ["React", "Commerce.js", "Material UI", "Node.js", "MySQL"]
+    },
+    {
+      "name": "Recipe Generation From Food Image",
+      "startDate": "2022-08",
+      "endDate": "2023-10",
+      "description": "Python system generating recipes from food images.",
+      "highlights": [
+        "Built a Python-based system for recipe generation from food images using OpenCV.",
+        "Implemented image processing algorithms to extract relevant information."
+      ],
+      "keywords": ["Python", "OpenCV", "Image Processing"]
+    },
+    {
+      "name": "Nowdays (Chat Application)",
+      "startDate": "2022-04",
+      "endDate": "2022-06",
+      "description": "Real-time chat application.",
+      "highlights": [
+        "Built a real-time chat application using Express.js, React.js, Socket.io, MongoDB, Node.js.",
+        "Implemented web sockets for real-time messaging."
+      ],
+      "keywords": ["Express.js", "React.js", "Socket.io", "MongoDB", "Node.js"]
+    },
+    {
+      "name": "Hospital Management System",
+      "startDate": "2023-02",
+      "endDate": "2023-03",
+      "description": "Web-based hospital management system.",
+      "highlights": [
+        "Built a web-based Hospital Management System using PHP and JavaScript.",
+        "Implemented patient record management, appointment scheduling, and inventory tracking."
+      ],
+      "keywords": ["PHP", "JavaScript", "MySQL"]
+    }
+  ],
+  "skills": {
+    "frontend": ["HTML/CSS", "React.js", "Next.js", "JavaScript", "TypeScript", "Material UI", "Figma", "Adobe XD"],
+    "backend": ["Python", "Django", "Flask", "FastAPI", "Node.js", "Express.js", "MERN Stack"],
+    "databases": ["MySQL", "MongoDB"],
+    "cloud_devops": ["AWS", "Microsoft Azure", "Google Cloud Platform (GCP)", "Docker", "Kubernetes", "Jenkins", "Grafana", "Terraform", "CI/CD"],
+    "cybersecurity": ["Kali Linux", "OWASP", "Penetration Testing", "Secure Coding"],
+    "other": ["Git", "OpenCV", "Socket.io"]
+  },
+  "certifications": [
+    "Python Programming Language (Jul 2019)",
+    "Cyber security rules, process and operating system security (Nov 2020)",
+    "C for Everyone: Programming Fundamentals (Nov 2021)",
+    "Programming Foundations with JavaScript, HTML and CSS (Feb 2022)",
+    "Developing Cloud Applications with Node.js and React (Mar 2022)",
+    "Software Testing (Mar 2024)"
+  ],
+  "interests": ["Data Structures", "Java", "Spring MVC", "Data Science", "ASP.NET", "Web Development", "Full Stack Development"]
+}

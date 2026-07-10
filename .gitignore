@@ -2,7 +2,7 @@
 logs
 .env
 server/node_modules
-server/
+# server-included
 *.log
 npm-debug.log*
 yarn-debug.log*
