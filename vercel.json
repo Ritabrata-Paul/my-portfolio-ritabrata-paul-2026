@@ -1,0 +1,17 @@
+{
+  "cleanUrls": true,
+  "rewrites": [
+    {
+      "source": "/dashboard",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/dashboard/:path*",
+      "destination": "/dashboard/index.html"
+    },
+    {
+      "source": "/((?!assets/|images/|models/|draco/|dashboard/|Ritabrata%20Paul|Ritabrata_Paul_Resume).* )",
+      "destination": "/index.html"
+    }
+  ]
+}
