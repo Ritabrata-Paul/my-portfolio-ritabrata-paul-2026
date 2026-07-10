@@ -1,0 +1,37 @@
+/* Reconstructed after disk corruption. The detailed character styling
+   (.character-model / -rim / -hover / canvas) lives in Landing.css — do NOT
+   duplicate it here or it will override and misplace the character.
+   This file only provides the fixed wrapper that positions the whole
+   character stage over the hero viewport. */
+
+.character-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  height: var(--vh, 100vh);
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Hover-link label slide effect (used in Navbar / SocialIcons) */
+.hover-links {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  overflow: hidden;
+  line-height: 1.1;
+}
+.hover-links span {
+  transition: transform 0.3s ease;
+}
+.hover-links span:nth-child(2) {
+  position: absolute;
+  top: 100%;
+  left: 0;
+}
+.hover-links:hover span {
+  transform: translateY(-100%);
+}

@@ -1,0 +1,39 @@
+/* App-level layout. Global tokens (--cWidth, --cMaxWidth, colors) live in index.css. */
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* Shared centered frame used by every section (Career, Work, Services,
+   Contact, etc.). Reconstructed after the original App.css was lost to disk
+   corruption — this is what gives the content its left/right breathing room. */
+.section-container {
+  width: var(--cWidth);
+  max-width: var(--cMaxWidth);
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+}
+
+/* Navbar Dashboard button (pill) */
+.dashboard-item {
+  list-style: none;
+}
+.dashboard-btn {
+  display: inline-block;
+  padding: 7px 16px;
+  border: 1px solid var(--accentColor);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: var(--accentColor);
+  background: color-mix(in srgb, var(--accentColor) 10%, transparent);
+  transition: background 0.25s ease, color 0.25s ease, transform 0.15s ease;
+  white-space: nowrap;
+}
+.dashboard-btn:hover {
+  background: var(--accentColor);
+  color: #04121a;
+  transform: translateY(-1px);
+}

@@ -1,0 +1,145 @@
+/* ── Services Section ── */
+.services-section {
+  position: relative;
+  z-index: 2;
+  background-color: var(--backgroundColor);
+  padding: 120px 0;
+  margin: auto;
+}
+
+.services-section h2 {
+  font-size: 70px;
+  font-weight: 400;
+  margin-top: 0;
+  margin-bottom: 60px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.services-section h2 > span {
+  color: var(--accentColor);
+  font-style: italic;
+}
+
+.services-container {
+  margin: auto;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+}
+
+.service-card {
+  position: relative;
+  padding: 40px 35px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+  transition: all 0.4s ease;
+  overflow: hidden;
+}
+
+.service-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accentColor), transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.service-card:hover {
+  border-color: rgba(94, 234, 212, 0.2);
+  background: rgba(94, 234, 212, 0.03);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 40px rgba(94, 234, 212, 0.06);
+}
+
+.service-card:hover::before {
+  opacity: 1;
+}
+
+.service-number {
+  font-size: 48px;
+  font-weight: 700;
+  opacity: 0.08;
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  transition: opacity 0.4s ease;
+}
+
+.service-card:hover .service-number {
+  opacity: 0.15;
+  color: var(--accentColor);
+}
+
+.service-card h3 {
+  font-size: 24px;
+  font-weight: 500;
+  margin: 0 0 15px;
+  letter-spacing: 0.5px;
+}
+
+.service-card p {
+  font-size: 15px;
+  font-weight: 300;
+  line-height: 1.6;
+  margin: 0;
+  opacity: 0.7;
+  transition: opacity 0.3s ease;
+}
+
+.service-card:hover p {
+  opacity: 0.9;
+}
+
+/* ── Responsive ── */
+@media only screen and (max-width: 1400px) {
+  .services-section h2 {
+    font-size: 50px;
+  }
+
+  .service-card h3 {
+    font-size: 20px;
+  }
+
+  .service-card p {
+    font-size: 14px;
+  }
+}
+
+@media only screen and (max-width: 900px) {
+  .services-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .services-section {
+    padding: 60px 0;
+  }
+
+  .services-section h2 {
+    font-size: 40px;
+    margin-bottom: 40px;
+  }
+
+  .service-card {
+    padding: 30px 25px;
+  }
+}
+
+@media only screen and (max-width: 600px) {
+  .services-section h2 {
+    font-size: 35px;
+  }
+
+  .service-card h3 {
+    font-size: 18px;
+  }
+}
