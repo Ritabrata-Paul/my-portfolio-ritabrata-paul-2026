@@ -168,6 +168,30 @@
     .qlist li { margin-bottom: 5px; }
     .detail-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; padding-top: 6px; border-top: 1px solid #1c2029; }
     .empty { padding: 40px; text-align: center; color: #6b7386; }
+
+    /* Blog admin */
+    .blog-admin { display: grid; grid-template-columns: 1.4fr 1fr; gap: 18px; align-items: start; }
+    @media (max-width: 900px) { .blog-admin { grid-template-columns: 1fr; } }
+    .editor-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .editor-head h3 { margin: 0; }
+    .blog-editor input, .blog-editor textarea {
+      width: 100%; background: #0f1319; border: 1px solid #2b3040; color: #fff;
+      border-radius: 8px; padding: 10px 12px; margin-bottom: 10px; font-family: inherit; font-size: 13px;
+    }
+    .blog-editor textarea { min-height: 300px; resize: vertical; font-family: ui-monospace, Menlo, Consolas, monospace; line-height: 1.6; }
+    .blog-editor input:focus, .blog-editor textarea:focus { outline: none; border-color: #3b82f6; }
+    .ai-box { display: flex; gap: 8px; margin-bottom: 10px; }
+    .ai-box input { margin-bottom: 0; }
+    .ai-box .btn-primary { white-space: nowrap; }
+    .editor-actions { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+    .chk { display: flex; align-items: center; gap: 7px; font-size: 13px; color: #cbd2e0; cursor: pointer; }
+    .post-item { display: flex; align-items: center; gap: 10px; padding: 11px 12px; border: 1px solid #232733; border-radius: 9px; margin-bottom: 8px; }
+    .post-item:hover { background: #131722; }
+    .post-item .pi-main { flex: 1; min-width: 0; cursor: pointer; }
+    .post-item .pi-title { font-size: 13.5px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .post-item .pi-sub { font-size: 11px; color: #7c86a0; margin-top: 2px; }
+    .badge-pub { font-size: 10px; padding: 2px 8px; border-radius: 20px; background: rgba(52,211,153,.16); color: #34d399; }
+    .badge-draft { font-size: 10px; padding: 2px 8px; border-radius: 20px; background: #232733; color: #8b93a7; }
   </style>
 </head>
 <body>
@@ -200,6 +224,7 @@
         <a class="nav-item active" data-view="overview" onclick="switchView('overview')">📊 Overview</a>
         <a class="nav-item" data-view="applications" onclick="switchView('applications')">📋 Applications</a>
         <a class="nav-item" data-view="automation" onclick="switchView('automation')">🤖 Run Job Hunt</a>
+        <a class="nav-item" data-view="blog" onclick="switchView('blog')">✍️ Blog</a>
       </nav>
       <div class="sidebar-foot">
         <button class="ghost" style="width:100%" onclick="logout()">🔒 Lock</button>
@@ -280,6 +305,42 @@
             Reads your master CV + GitHub, searches Remotive · Arbeitnow · Jooble, scores ATS, and tailors a truthful resume + cover letter with Claude for each strong match. Results appear under <b>Applications</b>.
           </div>
           <div id="logBox" class="log-box">No run yet. Click “Run Job Hunt” to start.</div>
+        </div>
+      </section>
+
+      <!-- Blog -->
+      <section id="view-blog" class="view hidden">
+        <div class="blog-admin">
+          <div class="blog-editor card">
+            <div class="editor-head">
+              <h3 id="editorTitle">New Post</h3>
+              <button class="ghost" onclick="newPost()">+ New</button>
+            </div>
+            <input type="hidden" id="postId" />
+            <input id="postTitle" placeholder="Post title" />
+            <input id="postTags" placeholder="tags, comma separated" />
+            <input id="postCover" placeholder="cover image URL (optional)" />
+
+            <div class="ai-box">
+              <input id="aiNotes" placeholder="AI draft: topic or bullet points to write about…" />
+              <button id="aiBtn" class="btn-primary" onclick="aiDraft()">✨ AI Draft</button>
+            </div>
+
+            <textarea id="postContent" placeholder="Write your post in Markdown…"></textarea>
+
+            <div class="editor-actions">
+              <label class="chk"><input type="checkbox" id="postPublished" /> Published</label>
+              <div style="flex:1"></div>
+              <button class="ghost" id="deleteBtn" style="display:none" onclick="deletePost()">Delete</button>
+              <button class="btn-primary" id="saveBtn" onclick="savePost()">Save</button>
+            </div>
+            <div id="blogMsg" class="msg"></div>
+          </div>
+
+          <div class="blog-posts card">
+            <h3>Your Posts</h3>
+            <div id="postList"></div>
+          </div>
         </div>
       </section>
     </div>
@@ -484,11 +545,104 @@
     function downloadCover(id) { window.open(API_BASE + '/api/applications/' + id + '/cover-letter?token=' + encodeURIComponent(TOKEN), '_blank'); }
 
     function switchView(v) {
-      ['overview', 'applications', 'automation'].forEach((name) => {
+      ['overview', 'applications', 'automation', 'blog'].forEach((name) => {
         $('view-' + name).classList.toggle('hidden', name !== v);
         document.querySelector('.nav-item[data-view="' + name + '"]').classList.toggle('active', name === v);
       });
-      $('viewTitle').textContent = { overview: 'Overview', applications: 'Applications', automation: 'Run Job Hunt' }[v];
+      $('viewTitle').textContent = { overview: 'Overview', applications: 'Applications', automation: 'Run Job Hunt', blog: 'Blog' }[v];
+      if (v === 'blog') loadPosts();
+    }
+
+    // ── Blog admin ──
+    const bmsg = (t) => { $('blogMsg').textContent = t || ''; };
+
+    async function loadPosts() {
+      try {
+        const d = await api('/api/admin/blog');
+        const el = $('postList');
+        const posts = d.posts || [];
+        if (!posts.length) { el.innerHTML = '<div class="empty">No posts yet. Write one on the left →</div>'; return; }
+        el.innerHTML = posts.map((p) => `
+          <div class="post-item">
+            <div class="pi-main" onclick="editPost('${p._id}')">
+              <div class="pi-title">${esc(p.title)}</div>
+              <div class="pi-sub">${new Date(p.updatedAt).toLocaleDateString()} · /blog/${esc(p.slug)}</div>
+            </div>
+            ${p.published ? '<span class="badge-pub">Live</span>' : '<span class="badge-draft">Draft</span>'}
+          </div>`).join('');
+      } catch (e) { bmsg('Could not load posts: ' + e.message); }
+    }
+
+    function newPost() {
+      $('postId').value = ''; $('postTitle').value = ''; $('postTags').value = '';
+      $('postCover').value = ''; $('postContent').value = ''; $('aiNotes').value = '';
+      $('postPublished').checked = false;
+      $('editorTitle').textContent = 'New Post';
+      $('deleteBtn').style.display = 'none';
+      bmsg('');
+    }
+
+    async function editPost(id) {
+      try {
+        const d = await api('/api/admin/blog/' + id);
+        const p = d.post;
+        $('postId').value = p._id;
+        $('postTitle').value = p.title || '';
+        $('postTags').value = (p.tags || []).join(', ');
+        $('postCover').value = p.coverImage || '';
+        $('postContent').value = p.content || '';
+        $('postPublished').checked = !!p.published;
+        $('editorTitle').textContent = 'Edit Post';
+        $('deleteBtn').style.display = '';
+        bmsg('');
+      } catch (e) { bmsg('Error: ' + e.message); }
+    }
+
+    async function savePost() {
+      const id = $('postId').value;
+      const body = JSON.stringify({
+        title: $('postTitle').value.trim(),
+        tags: $('postTags').value,
+        coverImage: $('postCover').value.trim(),
+        content: $('postContent').value,
+        published: $('postPublished').checked,
+      });
+      if (!$('postTitle').value.trim()) return bmsg('Title is required.');
+      $('saveBtn').disabled = true; $('saveBtn').textContent = 'Saving…';
+      try {
+        const path = id ? '/api/admin/blog/' + id : '/api/admin/blog';
+        const method = id ? 'PATCH' : 'POST';
+        const d = await api(path, { method, body });
+        $('postId').value = d.post._id;
+        $('editorTitle').textContent = 'Edit Post';
+        $('deleteBtn').style.display = '';
+        bmsg('✓ Saved' + (d.post.published ? ' & published — live at /blog/' + d.post.slug : ' as draft'));
+        loadPosts();
+      } catch (e) { bmsg('Error: ' + e.message); }
+      finally { $('saveBtn').disabled = false; $('saveBtn').textContent = 'Save'; }
+    }
+
+    async function deletePost() {
+      const id = $('postId').value;
+      if (!id || !confirm('Delete this post permanently?')) return;
+      try { await api('/api/admin/blog/' + id, { method: 'DELETE' }); newPost(); loadPosts(); }
+      catch (e) { bmsg('Error: ' + e.message); }
+    }
+
+    async function aiDraft() {
+      const topic = $('aiNotes').value.trim() || $('postTitle').value.trim();
+      if (!topic) return bmsg('Type a topic or title for the AI to write about.');
+      $('aiBtn').disabled = true; $('aiBtn').innerHTML = '<span class="spinner"></span> Writing…';
+      bmsg('Claude is drafting your post…');
+      try {
+        const d = await api('/api/admin/blog/ai-draft', { method: 'POST', body: JSON.stringify({ topic, notes: $('aiNotes').value.trim() }) });
+        const draft = d.draft || {};
+        if (draft.title && !$('postTitle').value.trim()) $('postTitle').value = draft.title;
+        if (draft.tags) $('postTags').value = (draft.tags || []).join(', ');
+        if (draft.content) $('postContent').value = draft.content;
+        bmsg('✓ Draft ready — review and edit, then Save.');
+      } catch (e) { bmsg('AI draft failed: ' + e.message); }
+      finally { $('aiBtn').disabled = false; $('aiBtn').innerHTML = '✨ AI Draft'; }
     }
 
     // ── Charts ──

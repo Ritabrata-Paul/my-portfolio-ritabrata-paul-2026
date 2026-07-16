@@ -90,6 +90,54 @@ app.delete('/api/applications', requireAuth, async (_req, res) => {
   }
 });
 
+// ── Blog: public reads + admin CRUD (dashboard) + AI draft ──
+import { listPublished, getPublishedBySlug, listAll, getById, createPost, updatePost, deletePost, aiDraftPost } from './blog.js';
+
+// Public — no auth (portfolio /blog pages fetch these).
+app.get('/api/blog', async (_req, res) => {
+  try { res.json({ posts: await listPublished() }); }
+  catch (err) { res.status(500).json({ error: err.message }); }
+});
+app.get('/api/blog/:slug', async (req, res) => {
+  try {
+    const post = await getPublishedBySlug(req.params.slug);
+    if (!post) return res.status(404).json({ error: 'Post not found' });
+    res.json({ post });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
+// Admin — require a session (dashboard).
+app.get('/api/admin/blog', requireAuth, async (_req, res) => {
+  try { res.json({ posts: await listAll() }); }
+  catch (err) { res.status(500).json({ error: err.message }); }
+});
+app.get('/api/admin/blog/:id', requireAuth, async (req, res) => {
+  try {
+    const post = await getById(req.params.id);
+    if (!post) return res.status(404).json({ error: 'Not found' });
+    res.json({ post });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+app.post('/api/admin/blog', requireAuth, async (req, res) => {
+  try { res.json({ post: await createPost(req.body || {}) }); }
+  catch (err) { res.status(500).json({ error: err.message }); }
+});
+app.patch('/api/admin/blog/:id', requireAuth, async (req, res) => {
+  try { res.json({ post: await updatePost(req.params.id, req.body || {}) }); }
+  catch (err) { res.status(500).json({ error: err.message }); }
+});
+app.delete('/api/admin/blog/:id', requireAuth, async (req, res) => {
+  try { res.json(await deletePost(req.params.id)); }
+  catch (err) { res.status(500).json({ error: err.message }); }
+});
+app.post('/api/admin/blog/ai-draft', requireAuth, async (req, res) => {
+  try {
+    const { topic, notes, tone } = req.body || {};
+    if (!topic) return res.status(400).json({ error: 'A topic or title is required' });
+    res.json({ draft: await aiDraftPost({ topic, notes, tone }) });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 // ── Downloads: tailored resume (printable HTML) + cover letter ──
 import { getApplicationById } from './jobs/store.js';
 
