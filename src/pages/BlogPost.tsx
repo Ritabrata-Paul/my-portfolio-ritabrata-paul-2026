@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { marked } from "marked";
-import { apiGet } from "../api";
+import { apiGet, API_BASE } from "../api";
 import "./Blog.css";
 
 interface Post {
@@ -46,12 +46,23 @@ const BlogPost = () => {
         {error && <p className="blog-error">Post not found.</p>}
         {post && (
           <>
-            <div className="blog-card-date">{fmt(post.publishedAt || post.createdAt)}</div>
             <h1>{post.title}</h1>
+            <div className="blog-byline">
+              <span className="blog-byline-avatar">RP</span>
+              <span>
+                Posted by <strong>Ritabrata Paul</strong>
+                <span className="blog-byline-date"> · {fmt(post.publishedAt || post.createdAt)}</span>
+              </span>
+            </div>
             <div className="blog-tags">
               {(post.tags || []).map((t) => <span key={t} className="blog-tag">{t}</span>)}
             </div>
-            {post.coverImage && <img src={post.coverImage} alt="" className="blog-article-cover" />}
+            <img
+              src={`${API_BASE}/api/blog/${slug}/cover`}
+              alt=""
+              className="blog-article-cover"
+              onError={(e) => ((e.target as HTMLImageElement).style.display = "none")}
+            />
             <div className="blog-content" dangerouslySetInnerHTML={{ __html: html }} />
           </>
         )}

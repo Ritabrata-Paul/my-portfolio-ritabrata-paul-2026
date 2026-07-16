@@ -91,7 +91,7 @@ app.delete('/api/applications', requireAuth, async (_req, res) => {
 });
 
 // ── Blog: public reads + admin CRUD (dashboard) + AI draft ──
-import { listPublished, getPublishedBySlug, listAll, getById, createPost, updatePost, deletePost, aiDraftPost } from './blog.js';
+import { listPublished, getPublishedBySlug, listAll, getById, createPost, updatePost, deletePost, aiDraftPost, generateCoverImage, getCoverBySlug } from './blog.js';
 
 // Public — no auth (portfolio /blog pages fetch these).
 app.get('/api/blog', async (_req, res) => {
@@ -104,6 +104,18 @@ app.get('/api/blog/:slug', async (req, res) => {
     if (!post) return res.status(404).json({ error: 'Post not found' });
     res.json({ post });
   } catch (err) { res.status(500).json({ error: err.message }); }
+});
+// Cover image (binary, cached) — kept out of the JSON payloads.
+app.get('/api/blog/:slug/cover', async (req, res) => {
+  try {
+    const dataUri = await getCoverBySlug(req.params.slug);
+    if (!dataUri) return res.status(404).end();
+    const m = /^data:([^;]+);base64,(.+)$/.exec(dataUri);
+    if (!m) return res.status(404).end();
+    res.setHeader('Content-Type', m[1]);
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.send(Buffer.from(m[2], 'base64'));
+  } catch (err) { res.status(500).end(); }
 });
 
 // Admin — require a session (dashboard).
@@ -119,8 +131,13 @@ app.get('/api/admin/blog/:id', requireAuth, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 app.post('/api/admin/blog', requireAuth, async (req, res) => {
-  try { res.json({ post: await createPost(req.body || {}) }); }
-  catch (err) { res.status(500).json({ error: err.message }); }
+  try {
+    const body = req.body || {};
+    // Auto-generate a cover (AI image, SVG fallback) when none is supplied.
+    if (!body.coverImage) body.coverImage = await generateCoverImage({ title: body.title, tags: body.tags });
+    const { coverImage, ...post } = await createPost(body);
+    res.json({ post });
+  } catch (err) { res.status(500).json({ error: err.message }); }
 });
 app.patch('/api/admin/blog/:id', requireAuth, async (req, res) => {
   try { res.json({ post: await updatePost(req.params.id, req.body || {}) }); }
@@ -144,11 +161,13 @@ app.post('/api/admin/blog/ai-post', requireAuth, async (req, res) => {
     const { topic, notes, tone } = req.body || {};
     if (!topic) return res.status(400).json({ error: 'A topic or title is required' });
     const draft = await aiDraftPost({ topic, notes, tone });
-    const post = await createPost({
+    const coverImage = await generateCoverImage({ title: draft.title || topic, tags: draft.tags || [] });
+    const { coverImage: _cover, ...post } = await createPost({
       title: draft.title || topic,
       content: draft.content || '',
       excerpt: draft.excerpt || '',
       tags: draft.tags || [],
+      coverImage,
       published: true,
     });
     res.json({ post });

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { apiGet } from "../api";
+import { apiGet, API_BASE } from "../api";
 import "./Blog.css";
 
 interface Post {
@@ -45,9 +45,15 @@ const BlogList = () => {
 
         {posts.map((p) => (
           <Link to={`/blog/${p.slug}`} key={p._id} className="blog-card">
-            {p.coverImage && <img src={p.coverImage} alt="" className="blog-card-cover" />}
+            <img
+              src={`${API_BASE}/api/blog/${p.slug}/cover`}
+              alt=""
+              className="blog-card-cover"
+              loading="lazy"
+              onError={(e) => ((e.target as HTMLImageElement).style.display = "none")}
+            />
             <div className="blog-card-body">
-              <div className="blog-card-date">{fmt(p.publishedAt || p.createdAt)}</div>
+              <div className="blog-card-date">By Ritabrata Paul · {fmt(p.publishedAt || p.createdAt)}</div>
               <h2>{p.title}</h2>
               <p className="blog-excerpt">{p.excerpt}</p>
               <div className="blog-tags">
