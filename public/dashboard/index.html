@@ -184,16 +184,10 @@
       <div class="login-glow"></div>
       <h1>🔒 Dashboard Login</h1>
       <div id="step1">
-      <input id="emailInput" type="email" placeholder="Email" autocomplete="username" />
-      <input id="passInput" type="password" placeholder="Password" autocomplete="current-password" />
-      <button id="loginBtn" onclick="requestCode()">Send login code</button>
-    </div>
-    <div id="step2" class="hidden">
-      <p style="font-size:13px;color:#8b93a7">We emailed a 6-digit code. Enter it below.</p>
-      <input id="codeInput" type="text" inputmode="numeric" maxlength="6" placeholder="6-digit code" />
-      <button onclick="verifyCode()">Verify &amp; log in</button>
-      <button class="ghost" onclick="backToStep1()">Back</button>
-    </div>
+        <input id="emailInput" type="email" placeholder="Email" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()" />
+        <input id="passInput" type="password" placeholder="Password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()" />
+        <button id="loginBtn" onclick="doLogin()">Log in</button>
+      </div>
       <div id="gateMsg" class="msg"></div>
     </div>
   </div>
@@ -318,13 +312,13 @@
     const $ = (id) => document.getElementById(id);
     const setMsg = (t) => { $('gateMsg').textContent = t || ''; };
 
-    // Step 1: email + password → request emailed code
-    async function requestCode() {
+    // Email + password → session token (single step, no email/OTP)
+    async function doLogin() {
       setMsg('');
       const email = $('emailInput').value.trim();
       const password = $('passInput').value;
       if (!email || !password) return setMsg('Enter email and password.');
-      $('loginBtn').disabled = true; $('loginBtn').textContent = 'Sending…';
+      $('loginBtn').disabled = true; $('loginBtn').textContent = 'Logging in…';
       try {
         const res = await fetch(API_BASE + '/api/auth/login', {
           method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -332,37 +326,14 @@
         });
         const data = await res.json();
         if (!data.ok) return setMsg(data.error || 'Login failed');
-        pendingEmail = email;
-        $('step1').classList.add('hidden');
-        $('step2').classList.remove('hidden');
-        $('codeInput').focus();
-      } catch (e) { setMsg('Error: ' + e.message); }
-      finally { $('loginBtn').disabled = false; $('loginBtn').textContent = 'Send login code'; }
-    }
-
-    // Step 2: verify code → store session token
-    async function verifyCode() {
-      setMsg('');
-      const code = $('codeInput').value.trim();
-      if (!code) return setMsg('Enter the code.');
-      try {
-        const res = await fetch(API_BASE + '/api/auth/verify', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email: pendingEmail, code }),
-        });
-        const data = await res.json();
-        if (!data.ok) return setMsg(data.error || 'Verification failed');
         TOKEN = data.token;
         localStorage.setItem('dashToken', TOKEN);
         load();
       } catch (e) { setMsg('Error: ' + e.message); }
+      finally { $('loginBtn').disabled = false; $('loginBtn').textContent = 'Log in'; }
     }
 
-    function backToStep1() {
-      $('step2').classList.add('hidden');
-      $('step1').classList.remove('hidden');
-      setMsg('');
-    }
+    function backToStep1() { setMsg(''); }
 
     async function logout() {
       try { await api('/api/auth/logout', { method: 'POST' }); } catch {}

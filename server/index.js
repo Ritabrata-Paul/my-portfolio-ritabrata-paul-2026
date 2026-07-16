@@ -7,7 +7,7 @@ import { dirname, join } from 'node:path';
 import { spawn } from 'node:child_process';
 import { getApplications, updateApplication, stats, deleteApplication, deleteAllApplications } from './jobs/store.js';
 import { isConfigured } from './db.js';
-import { requestCode, verifyCode, validateSession, destroySession } from './auth.js';
+import { login, validateSession, destroySession } from './auth.js';
 import { getResume, warmCache } from './resume-generator.js';
 
 config({ path: '../.env' });
@@ -21,22 +21,11 @@ app.use(express.json());
 // Dashboard is served by Vite from public/dashboard/.
 // All /api data endpoints below require session-token auth.
 
-// ── Auth: email + password → emailed code → session token ──
+// ── Auth: email + password → session token ──
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body || {};
-    const out = await requestCode(email, password);
-    if (!out.ok) return res.status(401).json(out);
-    res.json({ ok: true, message: 'Code sent to your email' });
-  } catch (err) {
-    res.status(500).json({ ok: false, error: err.message });
-  }
-});
-
-app.post('/api/auth/verify', async (req, res) => {
-  try {
-    const { email, code } = req.body || {};
-    const out = await verifyCode(email, code);
+    const out = await login(email, password);
     if (!out.ok) return res.status(401).json(out);
     res.json({ ok: true, token: out.token, expiresAt: out.expiresAt });
   } catch (err) {
