@@ -322,8 +322,12 @@
             <input id="postCover" placeholder="cover image URL (optional)" />
 
             <div class="ai-box">
-              <input id="aiNotes" placeholder="AI draft: topic or bullet points to write about…" />
+              <input id="aiNotes" placeholder="Topic or bullet points for the AI…" />
               <button id="aiBtn" class="btn-primary" onclick="aiDraft()">✨ AI Draft</button>
+              <button id="aiPostBtn" class="btn-primary" onclick="aiAutoPost()">⚡ AI Auto-Post</button>
+            </div>
+            <div style="font-size:11px;color:#6b7386;margin:-4px 0 10px">
+              ✨ Draft fills the editor for you to review · ⚡ Auto-Post writes AND publishes it live in one click
             </div>
 
             <textarea id="postContent" placeholder="Write your post in Markdown…"></textarea>
@@ -643,6 +647,22 @@
         bmsg('✓ Draft ready — review and edit, then Save.');
       } catch (e) { bmsg('AI draft failed: ' + e.message); }
       finally { $('aiBtn').disabled = false; $('aiBtn').innerHTML = '✨ AI Draft'; }
+    }
+
+    // One click: Claude writes the post and it goes live immediately.
+    async function aiAutoPost() {
+      const topic = $('aiNotes').value.trim() || $('postTitle').value.trim();
+      if (!topic) return bmsg('Type a topic or title first.');
+      $('aiPostBtn').disabled = true; $('aiPostBtn').innerHTML = '<span class="spinner"></span> Publishing…';
+      bmsg('Claude is writing and publishing your post…');
+      try {
+        const d = await api('/api/admin/blog/ai-post', { method: 'POST', body: JSON.stringify({ topic, notes: $('aiNotes').value.trim() }) });
+        if (d.error) return bmsg('Auto-post failed: ' + d.error);
+        bmsg('⚡ Published! Live at /blog/' + d.post.slug);
+        $('aiNotes').value = '';
+        loadPosts();
+      } catch (e) { bmsg('Auto-post failed: ' + e.message); }
+      finally { $('aiPostBtn').disabled = false; $('aiPostBtn').innerHTML = '⚡ AI Auto-Post'; }
     }
 
     // ── Charts ──

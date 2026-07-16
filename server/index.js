@@ -138,6 +138,23 @@ app.post('/api/admin/blog/ai-draft', requireAuth, async (req, res) => {
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 
+// One-click: Claude writes the post AND it goes live immediately.
+app.post('/api/admin/blog/ai-post', requireAuth, async (req, res) => {
+  try {
+    const { topic, notes, tone } = req.body || {};
+    if (!topic) return res.status(400).json({ error: 'A topic or title is required' });
+    const draft = await aiDraftPost({ topic, notes, tone });
+    const post = await createPost({
+      title: draft.title || topic,
+      content: draft.content || '',
+      excerpt: draft.excerpt || '',
+      tags: draft.tags || [],
+      published: true,
+    });
+    res.json({ post });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});
+
 // ── Downloads: tailored resume (printable HTML) + cover letter ──
 import { getApplicationById } from './jobs/store.js';
 
